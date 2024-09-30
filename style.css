@@ -297,7 +297,7 @@ justify-items: center;
     margin: 0 auto;
 }
 .power.off{
-  background-color: var(--grey);
+  background: var(--grey);
 }
 
 .power-label{
