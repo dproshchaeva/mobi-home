@@ -213,6 +213,7 @@ justify-items: center;
    
 }
 .switch{
+    cursor: pointer;
     width: 60px;
     height: 28px;
     border-radius: 60px;
@@ -220,10 +221,13 @@ justify-items: center;
     margin: 30px auto 0;
     position: relative;
 }
-
+.switch.off div {
+    left: 0;
+    background: #bbb;
+}
 .switch div{
     position: absolute;
-    left: 0;
+    left: 52%;
     top: 0;
     width: 28px;
     height: 28px;
@@ -232,6 +236,7 @@ justify-items: center;
     transition: var(--transition);
 }
 .slider__progress{
+    pointer-events: none;
     position: absolute;
     left: 0;
     right: 0;
@@ -242,9 +247,12 @@ justify-items: center;
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    transition: all 0.5s ease-in-out;
     min-height: 30px;
     height: 45%;
+}
+
+.slider__progress span {
+    pointer-events: none;
 }
 
 
@@ -260,7 +268,6 @@ justify-items: center;
 .line-active{
     stroke: black;
     stroke-dasharray: 54 276;
-    transition: all 0.5s ease-in-out;
 }
 
 .round{

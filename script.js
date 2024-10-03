@@ -14,6 +14,10 @@ const dom = {
   sliders: {
     lights: document.getElementById('lights-slider'),
     humidity: document.getElementById('humidity-slider'),
+  },
+  switch: {
+    lights: document.getElementById('lights-power'),
+    humidity: document.getElementById('humidity-power'),
   }
 
   
@@ -36,44 +40,44 @@ let activeTab = 'temperature';
 const roomsData = {
 livingroom: {
   temperatureOff: false,
-  temperature: 16,
-  lights: 0,
-  humidity: 0,
+  temperature: 22,
+  lights: 100,
+  humidity: 70,
   humidityOff: false,
 },
 bedroom : {
   temperatureOff: false,
-  temperature: 16,
-  lights: 0,
-  humidity: 0,
+  temperature: 22,
+  lights: 100,
+  humidity: 70,
   humidityOff: false,
 },
 kitchen: {
   temperatureOff: false,
-  temperature: 16,
-  lights: 0,
-  humidity: 0,
+  temperature: 22,
+  lights: 100,
+  humidity: 70,
   humidityOff: false,
 },
 bathroom: {
   temperatureOff: false,
-  temperature: 16,
-  lights: 0,
-  humidity: 0,
+  temperature: 22,
+  lights: 100,
+  humidity: 70,
   humidityOff: false,
 },
 studio: {
   temperatureOff: false,
-  temperature: 16,
-  lights: 0,
-  humidity: 0,
+  temperature: 22,
+  lights: 100,
+  humidity: 70,
   humidityOff: false,
 },
 washingroom: {
   temperatureOff: false,
-  temperature: 16,
-  lights: 0,
-  humidity: 0,
+  temperature: 22,
+  lights: 100,
+  humidity: 70,
   humidityOff: false,
 }
 }
@@ -114,8 +118,9 @@ if (room != 'all') {
   const {
     temperature,
     lights,
-    humidity
-
+    humidity,
+    lightsOff,
+    humidityOff,
    } = roomsData[room];
   newSelectedRoom.classList.add('selected');
   renderScreen(false)
@@ -124,8 +129,11 @@ if (room != 'all') {
   renderTemperature();
   setTemperaturePower();
   changeSettingsType(activeTab);
-  changeSlider(lights,dataSettingsdom.sliders.lights);
-  changeSlider(humidity,dataSettingsdom.sliders.humidity);
+  changeSlider(lights,dom.sliders.lights);
+  changeSlider(humidity,dom.sliders.humidity);
+  changeSwitch('lights', lightsOff);
+  changeSwitch('humidity', humidityOff);
+
 } else {
   renderScreen(true)
 
@@ -196,7 +204,11 @@ let mousedown = false;
 let position = 0;
 let range = 0;
 let change = 0;
-dom.temperatureBtn.onmouseover = () => mouseover = true;
+
+dom.temperatureBtn.onmouseover = () => {
+  mouseover = true;
+  mousedown = false;
+}
 dom.temperatureBtn.onmouseout = () => mouseover = false;
 dom.temperatureBtn.onmouseup = () => mousedown = false;
 dom.temperatureBtn.onmousedown = (e) => {
@@ -207,7 +219,7 @@ dom.temperatureBtn.onmousedown = (e) => {
 dom.temperatureBtn.onmousemove = (e) => {
   if (mouseover && mousedown) {
     range = e.offsetY - position;
-    const newChange = Math.round(range / -50);
+    const newChange = Math.round(range / -5);
     if (newChange != change) {
       let temperature = +dom.temperature.innerText;
       if (newChange < change) {
@@ -274,8 +286,10 @@ function changeSettingsType(type) {
 
 function changeSlider(percent, slider) {
   if (percent >= 0 && percent <= 100){
+    const { type } = slider.parentElement.parentElement.dataset
     slider.querySelector('span').innerText = percent;
     slider.style.height = `${percent}%`;
+    roomsData[activeRoom][type] = percent
   }
 }
  
@@ -285,29 +299,56 @@ function watchSlider(slider) {
   let position = 0;
   let range = 0;
   let change = 0;
-  slider.onmouseover = () => mouseover = true;
-  slider.onmouseout = () => mouseover = false;
-  slider.onmouseup = () => mousedown = false;
-  slider.onmousedown = (e) => {
+  const parent = slider.parentElement;
+  parent.onmouseover = () => {
+    mouseover = true;
+    mousedown = false;
+  }
+  parent.onmouseout = () => mouseover = false;
+  parent.onmouseup = () => mousedown = false;
+  parent.onmousedown = (e) => {
    mousedown = true;
    position = e.offsetY;
    range = 0;
-}
-  dslider.onmousemove = (e) => {
+  }
+  parent.onmousemove = (e) => {
   if (mouseover && mousedown) {
     range = e.offsetY - position;
-    const newChange = Math.round(range / -50);
+    const newChange = Math.round(range / -0.1);
     if (newChange != change) {
-      let temperature = +dom.temperature.innerText;
+      let percent = +slider.querySelector('span').innerText;
       if (newChange < change) {
-        temperature = temperature - 1;
+        percent = percent - 1;
       } else {
-        temperature = temperature + 1;
+        percent = percent + 1;
       }
       change = newChange;
-      roomsData[activeRoom].temperature = temperature
-      renderTemperature(temperature);
+      changeSlider(percent, slider)
     }
   }  
+  }
 }
+watchSlider(dom.sliders.lights);
+watchSlider(dom.sliders.humidity);
+
+
+function changeSwitch(activeTab, isOff) {
+  if (isOff) {
+    dom.switch[activeTab].classList.add('off');
+  } else {
+    dom.switch[activeTab].classList.remove('off');
+
+  }
+  roomsData[activeRoom][`${activeTab}Off`] = isOff;
+}
+
+
+dom.switch.humidity.onclick = () => {
+  const isOff = !dom.switch.humidity.matches('.off');
+  changeSwitch(activeTab, isOff)
+}
+
+dom.switch.lights.onclick = () => {
+  const isOff = !dom.switch.lights.matches('.off');
+  changeSwitch(activeTab, isOff)
 }
