@@ -4,13 +4,19 @@ const dom = {
   rooms: document.getElementById('rooms'),
   settings: document.getElementById('settings'),
   settingsTabs: document.getElementById('settings-tabs'),
-  settingsPanel: document.getElementById('settings-panel'),
+  settingsPanels: document.getElementById('settings-panel'),
   temperatureLine: document.getElementById('temperature-line'),
   temperatureRound: document.getElementById('temperature-round'),
   temperature: document.getElementById('temperature'),
   temperatureBtn: document.getElementById('temperature-btn'),
   temperatureSaveBtn: document.getElementById('save-temperature'),
   temperaturePowerBtn: document.getElementById('power'),
+  sliders: {
+    lights: document.getElementById('lights-slider'),
+    humidity: document.getElementById('humidity-slider'),
+  }
+
+  
 
 }
 dom.selectbox.querySelector('.selectbox__selected').onclick = (event) => {
@@ -33,36 +39,42 @@ livingroom: {
   temperature: 16,
   lights: 0,
   humidity: 0,
+  humidityOff: false,
 },
 bedroom : {
   temperatureOff: false,
   temperature: 16,
   lights: 0,
   humidity: 0,
+  humidityOff: false,
 },
 kitchen: {
   temperatureOff: false,
   temperature: 16,
   lights: 0,
   humidity: 0,
+  humidityOff: false,
 },
 bathroom: {
   temperatureOff: false,
   temperature: 16,
   lights: 0,
   humidity: 0,
+  humidityOff: false,
 },
 studio: {
   temperatureOff: false,
   temperature: 16,
   lights: 0,
   humidity: 0,
+  humidityOff: false,
 },
 washingroom: {
   temperatureOff: false,
   temperature: 16,
   lights: 0,
   humidity: 0,
+  humidityOff: false,
 }
 }
 
@@ -99,12 +111,21 @@ if (selectedRoom) {
 }
 if (room != 'all') {
   const newSelectedRoom = dom.rooms.querySelector(`[data-room=${room}]`);
-  const temperature = roomsData[room].temperature;
+  const {
+    temperature,
+    lights,
+    humidity
+
+   } = roomsData[room];
   newSelectedRoom.classList.add('selected');
   renderScreen(false)
   activeRoom = room;
   dom.temperature.innerText = temperature;
-  setTemperaturePower(temperature);
+  renderTemperature();
+  setTemperaturePower();
+  changeSettingsType(activeTab);
+  changeSlider(lights,dataSettingsdom.sliders.lights);
+  changeSlider(humidity,dataSettingsdom.sliders.humidity);
 } else {
   renderScreen(true)
 
@@ -233,16 +254,60 @@ dom.settingsTabs.querySelectorAll('.tab').forEach((tab) => {
   tab.onclick = () => {
     const optionType = tab.dataset.type
     activeTab = optionType
-    changeTab(optionType)
+    changeSettingsType(optionType)
   }
 })
 
 
-function changeTab(type){
-  const selected = dom.settingsTabs.querySelector('.tab.selected')
-  selected.classList.remove('selected');
-  const tab = dom.settingsTabs.querySelector(`[data-type=${type}]`)
+function changeSettingsType(type) {
+  const tabSelected = dom.settingsTabs.querySelector('.tab.selected')
+  const panelSelected = dom.settingsPanels.querySelector('.selected');
+  const tab = dom.settingsTabs.querySelector(`[data-type=${type}]`);
+  const panel = dom.settingsPanels.querySelector(`[data-type=${type}]`);
+  tabSelected.classList.remove('selected');
+  panelSelected.classList.remove('selected');
   tab.classList.add('selected');
+  panel.classList.add('selected');
+
 
 }
 
+function changeSlider(percent, slider) {
+  if (percent >= 0 && percent <= 100){
+    slider.querySelector('span').innerText = percent;
+    slider.style.height = `${percent}%`;
+  }
+}
+ 
+function watchSlider(slider) {
+  let mouseover = false;
+  let mousedown = false;
+  let position = 0;
+  let range = 0;
+  let change = 0;
+  slider.onmouseover = () => mouseover = true;
+  slider.onmouseout = () => mouseover = false;
+  slider.onmouseup = () => mousedown = false;
+  slider.onmousedown = (e) => {
+   mousedown = true;
+   position = e.offsetY;
+   range = 0;
+}
+  dslider.onmousemove = (e) => {
+  if (mouseover && mousedown) {
+    range = e.offsetY - position;
+    const newChange = Math.round(range / -50);
+    if (newChange != change) {
+      let temperature = +dom.temperature.innerText;
+      if (newChange < change) {
+        temperature = temperature - 1;
+      } else {
+        temperature = temperature + 1;
+      }
+      change = newChange;
+      roomsData[activeRoom].temperature = temperature
+      renderTemperature(temperature);
+    }
+  }  
+}
+}

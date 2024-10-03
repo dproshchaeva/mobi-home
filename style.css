@@ -202,6 +202,7 @@ justify-items: center;
 
 
 .slider{
+    cursor: pointer;
    width: 100px;
    height: 250px;
    margin: 0 auto;
@@ -237,9 +238,9 @@ justify-items: center;
     bottom: 0;
     background: var(--gradient);
     color: #fff;
-    display: grid;
+    display: flex;
     align-items: center;
-    justify-items: center;
+    justify-content: center;
     font-size: 18px;
     transition: all 0.5s ease-in-out;
     min-height: 30px;
