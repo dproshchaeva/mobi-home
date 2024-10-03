@@ -101,11 +101,21 @@ justify-items: center;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 94px;
     grid-gap: 14px;
-
 }
+.settings__screen{
+    display: none;
+ }
+ .settings__screen.selected{
+    display: block; 
+ }
+ .settings__screen-item{
+     text-align: center;
+     font-size: 30px;
+     color: #666;
+ }
 
 
-.option {
+.tab {
     cursor: pointer;
     display: grid;
     grid-template-rows: 2fr 1fr;
@@ -115,15 +125,15 @@ justify-items: center;
     background-color: var(--grey);
     border-radius: 12px;
 }
-.option.selected{
+.tab.selected{
     background: var(--gradient);
     color: white
 
 }
-.option.selected i{
+.tab.selected i{
     opacity: 1;
 }
-.option i{
+.tab i{
     align-self: center;
     font-size: 3em;
     opacity: 0.7;
@@ -189,17 +199,7 @@ justify-items: center;
     transition: all 0.5s ease-in-out;
 }
 
-.settings__screen{
-   display: none;
-}
-.settings__screen-active{
-   display: block; 
-}
-.settings__screen-item{
-    text-align: center;
-    font-size: 30px;
-    color: #666;
-}
+
 
 .slider{
    width: 100px;
@@ -380,4 +380,6 @@ justify-items: center;
 .selectbox__item:not(:last-child){
     margin-bottom: 4px;
 }
+
+
 
